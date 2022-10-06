@@ -28,6 +28,23 @@ module.exports = () => {
         swSrc: './src-sw.js',
         swDest: 'service-worker.js',
       }),
+      new WebpackPwaManifest({
+        fingerprints: false,
+        name: 'Just Another Text Editor',
+        short_name: 'J.A.T.E.',
+        description: 'Best editor since Vim!',
+        //background_color: '#7eb4e2',
+        //theme_color: '#7eb4e2',
+        start_url: './',
+        publicPath: './',
+        icons: [
+          {
+            src: path.resolve('src/images/logo.png'),
+            sizes: 96,
+            destination: path.join('assets', 'icons'),
+          },
+        ],
+      }),
     ],
 
     module: {
