@@ -4,9 +4,6 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const path = require('path');
 const { InjectManifest } = require('workbox-webpack-plugin');
 
-// TODO: Add and configure workbox plugins for a service worker and manifest file.
-// TODO: Add CSS loaders and babel to webpack. (Check?)
-
 module.exports = () => {
   return {
     mode: 'development',
@@ -23,24 +20,35 @@ module.exports = () => {
         template: './index.html',
         title: 'Webpack Plugin',
       }),
-      new MiniCssExtractPlugin(),
+
+      // rjw - removing MiniCssExtractPlugin below
+      // new MiniCssExtractPlugin(),
+
       new InjectManifest({
         swSrc: './src-sw.js',
-        swDest: 'service-worker.js',
+        swDest: 'src-sw.js',
+        //rjw - 
+        // swDest: 'service-worker.js',
       }),
+
       new WebpackPwaManifest({
         fingerprints: false,
+        // rjw - Adding this next line
+        inject: true,
         name: 'Just Another Text Editor',
         short_name: 'J.A.T.E.',
         description: 'Best editor since Vim!',
-        //background_color: '#7eb4e2',
-        //theme_color: '#7eb4e2',
-        start_url: './',
-        publicPath: './',
+        // rjw - uncommenting the next two lines
+        background_color: '#7eb4e2',
+        theme_color: '#7eb4e2',
+        start_url: '/',
+        publicPath: '/',
         icons: [
           {
             src: path.resolve('src/images/logo.png'),
-            sizes: 96,
+            // Adding sizes array below
+            sizes: [96, 128, 192, 256, 384, 512],
+            // sizes: 96,
             destination: path.join('assets', 'icons'),
           },
         ],
@@ -51,7 +59,8 @@ module.exports = () => {
       rules: [
         {
           test: /\.css$/i,
-          use: [MiniCssExtractPlugin.loader, 'css-loader'],
+          use: ['style-loader', 'css-loader'],
+          // use: [MiniCssExtractPlugin.loader, 'css-loader'],
         },
         {
           test: /\.(png|svg|jpg|jpeg|gif)$/i,
@@ -59,14 +68,25 @@ module.exports = () => {
         },
         {
           test: /\.m?js$/,
-          exclude: /(node_modules|bower_components)/,
+          exclude: /node_modules/,
           use: {
             loader: 'babel-loader',
             options: {
               presets: ['@babel/preset-env'],
+              plugins: ['@babel/plugin-proposal-object-rest-spread', '@babel/transform-runtime'],
             },
           },
         },
+        // {
+        //   test: /\.m?js$/,
+        //   exclude: /(node_modules|bower_components)/,
+        //   use: {
+        //     loader: 'babel-loader',
+        //     options: {
+        //       presets: ['@babel/preset-env'],
+        //     },
+        //   },
+        // },
       ],
     },
   };
